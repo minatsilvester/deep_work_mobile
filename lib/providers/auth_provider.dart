@@ -14,11 +14,38 @@ enum Status {
 }
 
 class AuthProvider extends ChangeNotifier {
+  final loginUri = Uri.parse("http://10.0.2.2:4000/api/sign_in");
   final registerUri = Uri.parse("http://10.0.2.2:4000/api/sign_up");
 
   Status _registeredStatus = Status.notRegistered;
+  Status _loginStatus = Status.notLoggedIn;
 
   Status get registeredStatus => _registeredStatus;
+  Status get loginStatus => _loginStatus;
+
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    _loginStatus = Status.authenticating;
+    notifyListeners();
+
+    Response response = await post(loginUri,
+        body: json.encode({
+          'user': {'email': email, 'password': password}
+        }),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode == 200) {
+      final userData = json.decode(response.body);
+
+      User user = User.fromJson(userData['data']);
+
+      _loginStatus = Status.loggedIn;
+      notifyListeners();
+
+      return {'status': true, 'message': 'Login Successfull', 'user': user};
+    } else {
+      return {'status': false, 'message': 'Login Not Successfull'};
+    }
+  }
 
   Future<Map<String, dynamic>> register(userParams) async {
     _registeredStatus = Status.registering;
