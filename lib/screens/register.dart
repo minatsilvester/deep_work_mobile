@@ -61,7 +61,7 @@ class RegisterState extends State<Register> {
 
     final password = TextFormField(
         decoration: const InputDecoration(
-            hintText: 'Enter your Passwoed',
+            hintText: 'Enter your Password',
             border: OutlineInputBorder(),
             labelText: 'Password *'),
         validator: (value) => (value == null || value.isEmpty)

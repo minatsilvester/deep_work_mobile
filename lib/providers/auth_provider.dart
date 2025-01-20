@@ -1,4 +1,5 @@
 import 'package:deep_work_mobile/models/user.dart';
+import 'package:deep_work_mobile/presistence/user_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -34,16 +35,25 @@ class AuthProvider extends ChangeNotifier {
         headers: {'Content-Type': 'application/json'});
 
     if (response.statusCode == 200) {
-      final userData = json.decode(response.body);
+      final body = json.decode(response.body);
 
-      User user = User.fromJson(userData['data']);
+      final userData = body['data'];
+
+      User user = User.fromJson(userData);
+
+      UserPreferences().saveUser(user);
+      UserPreferences().saveToken(userData['token']);
 
       _loginStatus = Status.loggedIn;
       notifyListeners();
 
       return {'status': true, 'message': 'Login Successfull', 'user': user};
     } else {
-      return {'status': false, 'message': 'Login Not Successfull'};
+      return {
+        'status': false,
+        'message': 'Login Not Successfull',
+        'body': json.decode(response.body)
+      };
     }
   }
 
