@@ -28,31 +28,39 @@ class AuthProvider extends ChangeNotifier {
     _loginStatus = Status.authenticating;
     notifyListeners();
 
-    Response response = await post(loginUri,
-        body: json.encode({
-          'user': {'email': email, 'password': password}
-        }),
-        headers: {'Content-Type': 'application/json'});
+    try {
+      Response response = await post(loginUri,
+          body: json.encode({
+            'user': {'email': email, 'password': password}
+          }),
+          headers: {'Content-Type': 'application/json'});
 
-    if (response.statusCode == 200) {
-      final body = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final body = json.decode(response.body);
 
-      final userData = body['data'];
+        final userData = body['data'];
 
-      User user = User.fromJson(userData);
+        User user = User.fromJson(userData);
 
-      UserPreferences().saveUser(user);
-      UserPreferences().saveToken(userData['token']);
+        UserPreferences().saveUser(user);
+        UserPreferences().saveToken(userData['token']);
 
-      _loginStatus = Status.loggedIn;
-      notifyListeners();
+        _loginStatus = Status.loggedIn;
+        notifyListeners();
 
-      return {'status': true, 'message': 'Login Successfull', 'user': user};
-    } else {
+        return {'status': true, 'message': 'Login Successfull', 'user': user};
+      } else {
+        return {
+          'status': false,
+          'message': 'Login Not Successfull',
+          'body': json.decode(response.body)
+        };
+      }
+    } catch (e) {
       return {
         'status': false,
-        'message': 'Login Not Successfull',
-        'body': json.decode(response.body)
+        'messsage': 'Something went Wrong, please try again later',
+        'user': null
       };
     }
   }
@@ -61,29 +69,33 @@ class AuthProvider extends ChangeNotifier {
     _registeredStatus = Status.registering;
     notifyListeners();
 
-    Response response = await post(registerUri,
-        body: json.encode({'user': userParams}),
-        headers: {"Content-Type": "application/json"});
+    try {
+      Response response = await post(registerUri,
+          body: json.encode({'user': userParams}),
+          headers: {"Content-Type": "application/json"});
 
-    if (response.statusCode == 201) {
-      final userData = json.decode(response.body);
+      if (response.statusCode == 201) {
+        final userData = json.decode(response.body);
 
-      User user = User.fromJson(userData['data']);
+        User user = User.fromJson(userData['data']);
 
-      _registeredStatus = Status.registered;
-      notifyListeners();
+        _registeredStatus = Status.registered;
+        notifyListeners();
 
-      return {
-        'status': true,
-        'messsage': 'Successfully Registered User',
-        'user': user
-      };
-    } else {
-      return {
-        'status': false,
-        'message': 'Registration failed',
-        'data': response
-      };
+        return {
+          'status': true,
+          'messsage': 'Successfully Registered User',
+          'user': user
+        };
+      } else {
+        return {
+          'status': false,
+          'message': 'Registration failed',
+          'data': response
+        };
+      }
+    } catch (e) {
+      return {'status': false, 'message': 'Registration failed', 'data': null};
     }
   }
 }
