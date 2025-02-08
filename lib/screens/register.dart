@@ -102,8 +102,18 @@ class RegisterState extends State<Register> {
                           'time_zone': _timeZone,
                           'password': _password
                         };
-                        auth.register(userParams).then((response) =>
-                            {if (response['status']) log("Success")});
+                        auth.register(userParams).then((response) => {
+                              if (response['status'])
+                                {
+                                  if (context.mounted)
+                                    {
+                                      Navigator.pushReplacementNamed(
+                                          context, '/sign_in',
+                                          arguments:
+                                              "Registered Successfully, Sign in to continue")
+                                    }
+                                }
+                            });
                       } else {
                         log("Failed");
                       }
