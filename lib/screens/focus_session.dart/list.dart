@@ -9,6 +9,18 @@ class FocusSessionList extends StatelessWidget {
   Widget build(BuildContext context) {
     final focusSessionProvider =
         Provider.of<FocusSessionProvider>(context, listen: false);
+
+    final String? message =
+        ModalRoute.of(context)!.settings.arguments as String?;
+
+    if (message != null && message.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Focus Sessions')),
       body: Consumer<FocusSessionProvider>(builder: (context, provider, child) {
