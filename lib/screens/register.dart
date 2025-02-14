@@ -108,9 +108,9 @@ class RegisterState extends State<Register> {
                                   if (context.mounted)
                                     {
                                       Navigator.pushReplacementNamed(
-                                          context, '/sign_in',
-                                          arguments:
-                                              "Registered Successfully, Sign in to continue")
+                                        context,
+                                        '/sign_in',
+                                      )
                                     }
                                 }
                             });

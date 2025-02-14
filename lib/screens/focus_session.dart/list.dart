@@ -1,6 +1,7 @@
 import 'package:deep_work_mobile/providers/focus_session_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import './new.dart';
 
 class FocusSessionList extends StatelessWidget {
   const FocusSessionList({super.key});
@@ -10,15 +11,21 @@ class FocusSessionList extends StatelessWidget {
     final focusSessionProvider =
         Provider.of<FocusSessionProvider>(context, listen: false);
 
-    final String? message =
-        ModalRoute.of(context)!.settings.arguments as String?;
-
-    if (message != null && message.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
-      });
+    void openNewFocusSessionFormModal() {
+      showModalBottomSheet(
+          context: context,
+          isScrollControlled: false,
+          builder: (ctx) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                left: 16,
+                right: 16,
+                top: 16,
+              ),
+              child: const NewFocusSessionForm(),
+            );
+          });
     }
 
     return Scaffold(
@@ -61,7 +68,7 @@ class FocusSessionList extends StatelessWidget {
         );
       }),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: openNewFocusSessionFormModal,
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

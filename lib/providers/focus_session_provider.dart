@@ -40,8 +40,51 @@ class FocusSessionProvider extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> addFocusSession(focusSessionParams) async {
+    // _setLoading(true);
+
+    final String token = await userPreferences.getToken();
+
+    try {
+      Response response = await post(Uri.parse(baseUri),
+          body: json.encode({'focus_sessions': focusSessionParams}),
+          headers: {
+            'Content-Type': 'application/json',
+            'authorization': 'Bearer $token'
+          });
+
+      if (response.statusCode == 201) {
+        final decodedResponse = json.decode(response.body);
+
+        final focusSession = FocusSession.fromJson(decodedResponse['data']);
+
+        _appendFocusSession(focusSession);
+
+        return {
+          'status': true,
+          'message': 'Successfully Created Focus Session',
+          'data': focusSession
+        };
+      } else {
+        return {
+          'status': false,
+          'message': 'Something went wrong',
+          'data': null
+        };
+      }
+    } catch (e) {
+      return {'status': false, 'message': 'Something went wrong', 'data': null};
+    }
+  }
+
   void _setLoading(value) {
     _isLoading = value;
+    notifyListeners();
+  }
+
+  void _appendFocusSession(focusSession) {
+    _focusSessions.add(focusSession);
+    // _setLoading(false);
     notifyListeners();
   }
 }
