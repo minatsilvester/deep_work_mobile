@@ -42,17 +42,6 @@ class LoginState extends State<Login> {
         obscureText: true,
         onSaved: (value) => _password = value);
 
-    final String? message =
-        ModalRoute.of(context)!.settings.arguments as String?;
-
-    if (message != null && message.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
-      });
-    }
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('Sign In'),

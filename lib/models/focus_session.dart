@@ -1,4 +1,5 @@
 class FocusSession {
+  final int? id;
   final int? actualLength;
   final String? endTime;
   final String? expectedEndTime;
@@ -7,7 +8,8 @@ class FocusSession {
   final String? startTime;
 
   FocusSession(
-      {this.actualLength,
+      {this.id,
+      this.actualLength,
       this.endTime,
       this.expectedEndTime,
       required this.expectedLength,
@@ -16,6 +18,7 @@ class FocusSession {
 
   factory FocusSession.fromJson(Map<String, dynamic> json) {
     return FocusSession(
+        id: json["id"],
         actualLength: json['actual_length'],
         endTime: json['end_time'],
         expectedEndTime: json['expected_end_time'],
