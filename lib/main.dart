@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './screens/home.dart';
 import './screens/register.dart';
+import './theme/default_theme.dart';
 
 void main() {
   runApp(
@@ -33,6 +34,7 @@ class DeepWork extends StatelessWidget {
         auth.loginStatus == Status.loggedIn ? '/focus_sessions' : '/';
 
     return MaterialApp(
+      theme: defaultTheme,
       debugShowCheckedModeBanner: false,
       initialRoute: initialRoute,
       routes: {
