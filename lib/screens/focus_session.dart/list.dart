@@ -2,9 +2,23 @@ import 'package:deep_work_mobile/providers/focus_session_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './new.dart';
+import '../../common/utils.dart';
 
 class FocusSessionList extends StatelessWidget {
   const FocusSessionList({super.key});
+
+  Color setColor(String status) {
+    switch (status) {
+      case 'inprogress':
+        return const Color.fromARGB(255, 185, 167, 9);
+      case 'cancelled':
+        return const Color.fromARGB(255, 159, 26, 17);
+      case 'completed':
+        return Colors.green;
+      default:
+        return const Color.fromARGB(255, 185, 167, 9);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +72,36 @@ class FocusSessionList extends StatelessWidget {
           itemCount: focusSessionProvider.focusSessions.length,
           itemBuilder: (context, index) {
             final focusSession = focusSessionProvider.focusSessions[index];
-            return ListTile(
-              title: Text(focusSession.sessionDate!),
-              // trailing: Row(children: [
-              //   IconButton(onPressed: () {}, icon: const Icon(Icons.edit))
-              // ])
-            );
+            return Card(
+                color: setColor(focusSession.status!),
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            focusSession.name!,
+                            style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                            textAlign: TextAlign.start,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Expected Length: ${focusSession.expectedLength.toString()}',
+                            style: const TextStyle(color: Colors.white),
+                            textAlign: TextAlign.start,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                              "Start Time: ${formatDateTime(focusSession.startTime!)}"),
+                          const SizedBox(height: 4),
+                          Text(focusSession.status == 'inprogress'
+                              ? "Expected End Time: ${formatDateTime(focusSession.expectedEndTime!)}"
+                              : "End Time: ${formatDateTime(focusSession.expectedEndTime!)}")
+                        ])));
           },
         );
       }),
