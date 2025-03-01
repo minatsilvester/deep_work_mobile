@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 // import '../models/user.dart';
 
 class Register extends StatefulWidget {
@@ -105,13 +106,7 @@ class RegisterState extends State<Register> {
                         auth.register(userParams).then((response) => {
                               if (response['status'])
                                 {
-                                  if (context.mounted)
-                                    {
-                                      Navigator.pushReplacementNamed(
-                                        context,
-                                        '/sign_in',
-                                      )
-                                    }
+                                  if (context.mounted) {context.go('/sign_in')}
                                 }
                             });
                       } else {

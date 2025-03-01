@@ -2,6 +2,7 @@ import 'package:deep_work_mobile/providers/auth_provider.dart';
 import 'package:deep_work_mobile/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 // import 'dart:developer';
 
 class Login extends StatefulWidget {
@@ -73,11 +74,7 @@ class LoginState extends State<Login> {
                                     {
                                       userProvider.setUser(response['user']),
                                       if (context.mounted)
-                                        {
-                                          Navigator.pushReplacementNamed(
-                                              context, '/focus_sessions',
-                                              arguments: "Welcome Back")
-                                        }
+                                        {context.push('/focus_sessions')}
                                     }
                                   else
                                     _errorMessage = response['body']['message']
