@@ -128,7 +128,7 @@ class ShowFocusSessionState extends State<ShowFocusSession> {
                         Row(
                           // mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.flag,
+                            const Icon(Icons.hourglass_bottom,
                                 color: Colors.redAccent, size: 24),
                             const SizedBox(width: 8),
                             Text(
@@ -138,6 +138,21 @@ class ShowFocusSessionState extends State<ShowFocusSession> {
                             ),
                           ],
                         ),
+                        if (focusSession.status == 'completed') ...[
+                          Row(
+                            // mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.access_time_filled,
+                                  color: Colors.redAccent, size: 24),
+                              const SizedBox(width: 8),
+                              Text(
+                                formatDateTime(focusSession.endTime!),
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ],
                         const SizedBox(height: 10),
                         Row(
                           // mainAxisAlignment: MainAxisAlignment.center,
@@ -152,6 +167,21 @@ class ShowFocusSessionState extends State<ShowFocusSession> {
                             ),
                           ],
                         ),
+                        if (isFocusSessionCompleted(focusSession)) ...[
+                          Row(
+                            // mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.timer,
+                                  color: Colors.yellowAccent, size: 24),
+                              const SizedBox(width: 8),
+                              Text(
+                                '${focusSession.actualLength}',
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ]
                       ],
                     ),
                     const SizedBox(height: 20),

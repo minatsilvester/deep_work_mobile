@@ -20,3 +20,7 @@ Color setColor(String status) {
 String capitalize(string) {
   return "${string[0].toUpperCase()}${string.substring(1)}";
 }
+
+bool isFocusSessionCompleted(focusSession) {
+  return focusSession.status == "completed";
+}
