@@ -41,6 +41,12 @@ class UserPreferences {
     prefs.remove("timeZone");
   }
 
+  void removeToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.remove("token");
+  }
+
   Future<String> getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 

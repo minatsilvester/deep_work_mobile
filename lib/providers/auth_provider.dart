@@ -98,4 +98,11 @@ class AuthProvider extends ChangeNotifier {
       return {'status': false, 'message': 'Registration failed', 'data': null};
     }
   }
+
+  Future<void> logout() async {
+    UserPreferences().removeUser();
+    UserPreferences().removeToken();
+    _loginStatus = Status.notLoggedIn;
+    notifyListeners();
+  }
 }

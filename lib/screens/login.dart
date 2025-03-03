@@ -82,7 +82,15 @@ class LoginState extends State<Login> {
                           }
                         },
                         child: const Text('Sign In')),
-                  )
+                  ),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    const Text("Don't Have an account?"),
+                    TextButton(
+                        onPressed: () {
+                          context.go('/sign_up');
+                        },
+                        child: const Text("Sign Up"))
+                  ])
                 ]))));
   }
 }

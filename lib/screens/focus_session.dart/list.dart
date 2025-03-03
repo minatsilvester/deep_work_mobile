@@ -1,3 +1,4 @@
+import 'package:deep_work_mobile/providers/auth_provider.dart';
 import 'package:deep_work_mobile/providers/focus_session_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,11 @@ class FocusSessionListState extends State<FocusSessionList> {
       }
     }
 
+    void logout() {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      authProvider.logout();
+    }
+
     void openNewFocusSessionFormModal() {
       showModalBottomSheet(
           context: context,
@@ -57,6 +63,9 @@ class FocusSessionListState extends State<FocusSessionList> {
           icon: const Icon(Icons.calendar_today),
           onPressed: () => selectDate(context),
         ),
+        IconButton(
+            onPressed: () => {logout(), context.go('/')},
+            icon: const Icon(Icons.logout))
       ]),
       body: Consumer<FocusSessionProvider>(builder: (context, provider, child) {
         if (focusSessionProvider.isLoading) {
