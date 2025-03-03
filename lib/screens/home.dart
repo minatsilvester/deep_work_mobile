@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -16,14 +17,14 @@ class Home extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/sign_up');
+                context.go('/sign_up');
               },
               child: const Text('Go to Registration'),
             ),
             const SizedBox(height: 16), // Adds spacing between the buttons
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/sign_in');
+                context.go('/sign_in');
               },
               child: const Text('Go to Sign In'),
             ),

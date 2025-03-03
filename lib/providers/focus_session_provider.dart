@@ -77,6 +77,64 @@ class FocusSessionProvider extends ChangeNotifier {
     }
   }
 
+  FocusSession? getFocusSession(String id) {
+    int? focusSessionId = int.tryParse(id);
+    if (focusSessionId == null) return null;
+    return _focusSessions
+        .firstWhere((focusSession) => focusSession.id == focusSessionId);
+  }
+
+  Future<Map<String, dynamic>> stopFocusSession(String id) async {
+    int? focusSessionId = int.tryParse(id);
+
+    if (focusSessionId != null) {
+      int index =
+          _focusSessions.indexWhere((session) => session.id == focusSessionId);
+      final focusSession = _focusSessions[index];
+      final String token = await userPreferences.getToken();
+
+      try {
+        Response response = await put(
+            Uri.parse('$baseUri/${focusSession.id}/stop'),
+            // body: json.encode({'focus_sessions': focusSessionParams}),
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': 'Bearer $token'
+            });
+
+        if (response.statusCode == 200) {
+          final decodedResponse = json.decode(response.body);
+
+          final updatedFocusSession =
+              FocusSession.fromJson(decodedResponse['data']);
+
+          _focusSessions[index] = updatedFocusSession;
+          notifyListeners();
+
+          return {
+            'status': true,
+            'message': 'Focus Session Stopped',
+            'data': focusSession
+          };
+        } else {
+          return {
+            'status': false,
+            'message': 'Something went wrong',
+            'data': null
+          };
+        }
+      } catch (e) {
+        return {
+          'status': false,
+          'message': 'Something went wrong',
+          'data': null
+        };
+      }
+    } else {
+      return {'status': false, 'message': 'Something went wrong', 'data': null};
+    }
+  }
+
   void _setLoading(value) {
     _isLoading = value;
     notifyListeners();
