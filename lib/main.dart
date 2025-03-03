@@ -39,7 +39,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(
-            create: (_) => FocusSessionProvider()..listFocusSessions())
+            create: (_) =>
+                FocusSessionProvider()..listFocusSessions(date: DateTime.now()))
       ],
       child: const DeepWork(),
     ),
