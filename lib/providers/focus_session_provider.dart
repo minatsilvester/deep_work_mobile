@@ -12,17 +12,23 @@ class FocusSessionProvider extends ChangeNotifier {
   bool _isFailed = false;
   bool _isLoading = false;
   List<FocusSession> _focusSessions = [];
+  DateTime _selectedDate = DateTime.now();
 
   List<FocusSession> get focusSessions => _focusSessions;
   String? get errorMessage => _errorMessage;
   bool get isFailed => _isFailed;
   bool get isLoading => _isLoading;
+  DateTime get selectedDate => _selectedDate;
 
-  Future<void> listFocusSessions() async {
+  Future<void> listFocusSessions({DateTime? date}) async {
     _setLoading(true);
     final String token = await userPreferences.getToken();
 
-    Response response = await get(Uri.parse(baseUri), headers: {
+    String formattedDate =
+        date != null ? date.toIso8601String().split('T').first : '';
+
+    Response response =
+        await get(Uri.parse('$baseUri?date=$formattedDate'), headers: {
       'authorization': 'Bearer $token',
     });
 
@@ -133,6 +139,11 @@ class FocusSessionProvider extends ChangeNotifier {
     } else {
       return {'status': false, 'message': 'Something went wrong', 'data': null};
     }
+  }
+
+  void updateSelectedDate(DateTime date) {
+    _selectedDate = date;
+    notifyListeners();
   }
 
   void _setLoading(value) {

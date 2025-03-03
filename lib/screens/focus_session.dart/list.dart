@@ -5,13 +5,34 @@ import './new.dart';
 import '../../common/utils.dart';
 import 'package:go_router/go_router.dart';
 
-class FocusSessionList extends StatelessWidget {
+class FocusSessionList extends StatefulWidget {
   const FocusSessionList({super.key});
 
+  @override
+  FocusSessionListState createState() => FocusSessionListState();
+}
+
+class FocusSessionListState extends State<FocusSessionList> {
   @override
   Widget build(BuildContext context) {
     final focusSessionProvider =
         Provider.of<FocusSessionProvider>(context, listen: false);
+
+    // focusSessionProvider.listFocusSessions(date: DateTime.now());
+
+    Future<void> selectDate(BuildContext context) async {
+      DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: focusSessionProvider.selectedDate,
+          firstDate: DateTime(2024),
+          lastDate: DateTime.now());
+
+      if (pickedDate != null &&
+          pickedDate != focusSessionProvider.selectedDate) {
+        focusSessionProvider.updateSelectedDate(pickedDate);
+        focusSessionProvider.listFocusSessions(date: pickedDate);
+      }
+    }
 
     void openNewFocusSessionFormModal() {
       showModalBottomSheet(
@@ -31,7 +52,12 @@ class FocusSessionList extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Focus Sessions')),
+      appBar: AppBar(title: const Text('Focus Sessions'), actions: [
+        IconButton(
+          icon: const Icon(Icons.calendar_today),
+          onPressed: () => selectDate(context),
+        ),
+      ]),
       body: Consumer<FocusSessionProvider>(builder: (context, provider, child) {
         if (focusSessionProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
