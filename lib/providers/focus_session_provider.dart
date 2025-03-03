@@ -90,7 +90,8 @@ class FocusSessionProvider extends ChangeNotifier {
         .firstWhere((focusSession) => focusSession.id == focusSessionId);
   }
 
-  Future<Map<String, dynamic>> stopFocusSession(String id) async {
+  Future<Map<String, dynamic>> stopFocusSession(
+      String id, String status) async {
     int? focusSessionId = int.tryParse(id);
 
     if (focusSessionId != null) {
@@ -102,7 +103,9 @@ class FocusSessionProvider extends ChangeNotifier {
       try {
         Response response = await put(
             Uri.parse('$baseUri/${focusSession.id}/stop'),
-            // body: json.encode({'focus_sessions': focusSessionParams}),
+            body: json.encode({
+              'focus_sessions': {'status': status}
+            }),
             headers: {
               'Content-Type': 'application/json',
               'authorization': 'Bearer $token'

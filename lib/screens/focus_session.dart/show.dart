@@ -49,9 +49,15 @@ class ShowFocusSessionState extends State<ShowFocusSession> {
               remainingTime = Duration.zero;
               _timer?.cancel();
 
-              if (focusSession.status == 'inprogress') {
+              // ✅ Prevent setting "completed" if status is "cancelled"
+              final updatedSession =
+                  Provider.of<FocusSessionProvider>(context, listen: false)
+                      .getFocusSession(widget.id);
+
+              if (updatedSession != null &&
+                  updatedSession.status == 'inprogress') {
                 Provider.of<FocusSessionProvider>(context, listen: false)
-                    .stopFocusSession(widget.id)
+                    .stopFocusSession(widget.id, 'completed')
                     .then((response) => {
                           if (response["status"]) {log("Success")}
                         });
@@ -192,13 +198,20 @@ class ShowFocusSessionState extends State<ShowFocusSession> {
                               ? Container(
                                   width: 120,
                                   height: 120,
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Colors.greenAccent,
+                                    color: focusSession.status == "cancelled"
+                                        ? Colors.redAccent
+                                        : Colors.greenAccent,
                                   ),
-                                  child: const Center(
-                                    child: Icon(Icons.check,
-                                        size: 80, color: Colors.white),
+                                  child: Center(
+                                    child: Icon(
+                                        focusSession.status == "cancelled"
+                                            ? Icons
+                                                .close // Show ❌ when cancelled
+                                            : Icons.check, // ✅ when completed
+                                        size: 80,
+                                        color: Colors.white),
                                   ),
                                 )
                               : Container(
@@ -235,7 +248,16 @@ class ShowFocusSessionState extends State<ShowFocusSession> {
                             ),
                           ),
                           onPressed: () {
-                            () => {};
+                            Provider.of<FocusSessionProvider>(context,
+                                    listen: false)
+                                .stopFocusSession(widget.id, 'cancelled')
+                                .then((response) {
+                              if (response["status"]) {
+                                setState(() {
+                                  remainingTime = Duration.zero; // Reset timer
+                                });
+                              }
+                            });
                           },
                           child: const Text(
                             "Cancel Focus Session",
