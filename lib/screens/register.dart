@@ -114,7 +114,15 @@ class RegisterState extends State<Register> {
                       }
                     },
                     child: const Text('Sign Up'),
-                  ))
+                  )),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    const Text("Already an account?"),
+                    TextButton(
+                        onPressed: () {
+                          context.go('/sign_in');
+                        },
+                        child: const Text("Sign In"))
+                  ])
                 ]))));
   }
 }
