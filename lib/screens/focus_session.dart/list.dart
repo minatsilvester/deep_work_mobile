@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import './new.dart';
 import '../../common/utils.dart';
 import 'package:go_router/go_router.dart';
+import '../../models/focus_session.dart';
 
 class FocusSessionList extends StatefulWidget {
   const FocusSessionList({super.key});
@@ -41,6 +42,27 @@ class FocusSessionListState extends State<FocusSessionList> {
     }
 
     void openNewFocusSessionFormModal() {
+      final focusSessionProvider =
+          Provider.of<FocusSessionProvider>(context, listen: false);
+
+      final inProgressSessions = focusSessionProvider.focusSessions
+          .where((focusSession) => focusSession.status == 'inprogress')
+          .toList();
+
+      final FocusSession? inProgressSession =
+          inProgressSessions.isNotEmpty ? inProgressSessions.first : null;
+
+      if (inProgressSession != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("There is already an active session!"),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return; // Exit the function without opening the modal
+      }
+
       showModalBottomSheet(
           context: context,
           isScrollControlled: false,
