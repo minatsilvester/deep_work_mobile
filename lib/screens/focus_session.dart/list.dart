@@ -6,6 +6,8 @@ import './new.dart';
 import '../../common/utils.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/focus_session.dart';
+import 'dart:async';
+import 'dart:developer';
 
 class FocusSessionList extends StatefulWidget {
   const FocusSessionList({super.key});
@@ -15,6 +17,75 @@ class FocusSessionList extends StatefulWidget {
 }
 
 class FocusSessionListState extends State<FocusSessionList> {
+  Duration? remainingTime;
+  Timer? _timer;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _checkAndStartTimer();
+  }
+
+  void _checkAndStartTimer() {
+    final focusSessionProvider = Provider.of<FocusSessionProvider>(context);
+    final activeSessions = focusSessionProvider.focusSessions
+        .where((focusSession) => focusSession.status == 'inprogress')
+        .toList();
+
+    final FocusSession? activeSession =
+        activeSessions.isNotEmpty ? activeSessions.first : null;
+
+    if (activeSession != null) {
+      _startCountDown(activeSession);
+    } else {
+      _timer?.cancel();
+      setState(() {
+        remainingTime = null;
+      });
+    }
+  }
+
+  void _startCountDown(focusSession) {
+    if (focusSession != null) {
+      DateTime endTime = DateTime.parse(focusSession.expectedEndTime!);
+      DateTime now = DateTime.now();
+      Duration difference = endTime.difference(now);
+
+      setState(() {
+        remainingTime = difference.isNegative ? Duration.zero : difference;
+      });
+
+      if (!difference.isNegative) {
+        _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (remainingTime == null) return; // Safety check
+
+          setState(() {
+            remainingTime = remainingTime! - const Duration(seconds: 1);
+
+            if (remainingTime!.isNegative) {
+              remainingTime = Duration.zero;
+              _timer?.cancel();
+
+              // ✅ Prevent setting "completed" if status is "cancelled"
+              final updatedSession =
+                  Provider.of<FocusSessionProvider>(context, listen: false)
+                      .getFocusSession(focusSession.id.toString());
+
+              if (updatedSession != null &&
+                  updatedSession.status == 'inprogress') {
+                Provider.of<FocusSessionProvider>(context, listen: false)
+                    .stopFocusSession(focusSession.id.toString(), 'completed')
+                    .then((response) => {
+                          if (response["status"]) {log("Success")}
+                        });
+              }
+            }
+          });
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final focusSessionProvider =
