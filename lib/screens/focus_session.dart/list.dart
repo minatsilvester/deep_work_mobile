@@ -57,8 +57,41 @@ class FocusSessionListState extends State<FocusSessionList> {
           });
     }
 
+    void showSummaryModal(BuildContext context) {
+      final focusSessionProvider =
+          Provider.of<FocusSessionProvider>(context, listen: false);
+      final totalSessions = focusSessionProvider.focusSessions.length;
+      final completedSessions = focusSessionProvider.focusSessions
+          .where((session) => session.status == 'completed')
+          .length;
+      final completionPercentage =
+          totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0;
+
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text("Focus Session Summary"),
+          content: Text(
+            "Completed: $completedSessions / $totalSessions\n"
+            "Completion Rate: ${completionPercentage.toStringAsFixed(2)}%",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text("Close"),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Focus Sessions'), actions: [
+        IconButton(
+          icon: const Icon(Icons.bar_chart),
+          tooltip: 'Summary',
+          onPressed: () => showSummaryModal(context),
+        ),
         IconButton(
           icon: const Icon(Icons.calendar_today),
           onPressed: () => selectDate(context),
